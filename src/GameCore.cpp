@@ -46,13 +46,14 @@
 #include <iterator>  //begin, end
 
 //Usings
-NS_CORE2048_BEGIN;
+USING_NS_CORE2048;
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constants                                                                  //
 ////////////////////////////////////////////////////////////////////////////////
-constexpr auto k_lesser_value = 2;
+constexpr auto k_lesser_value  = 2;
+constexpr auto k_victory_value = 2048;
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -122,7 +123,7 @@ GameCore::GameCore(
 
 GameCore::~GameCore()
 {
-
+    //Empty...
 }
 
 
@@ -168,18 +169,21 @@ const GameCore::Board& GameCore::get_board() const
 }
 
 
-const std::vector<Block::SPtr>& GameCore::make_move(Direction direction)
+//
+const GameCore::MoveResult& GameCore::make_move(Direction direction)
 {
-    if(!is_valid_move(direction))
-        return m_moved_blocks;
+    //Clear the previous data.
+    m_move_result.moved_blocks.clear  ();
+    m_move_result.merged_blocks.clear ();
+    m_move_result.removed_blocks.clear();
 
-    auto dir_coord = direction_2_coord(direction);
+    if(m_status == CoreGame::Status::Defeat || !is_valid_move(direction))
+        return m_move_result;
 
-    m_moved_blocks.clear  ();
-    m_merged_blocks.clear ();
-    m_removed_blocks.clear();
 
+    auto dir_coord  = direction_2_coord(direction);
     auto for_values = for_values_helper(m_board, dir_coord);
+
     for(int i  = std::get<0>(for_values);
             i != std::get<1>(for_values);
             i += std::get<2>(for_values))
@@ -193,8 +197,9 @@ const std::vector<Block::SPtr>& GameCore::make_move(Direction direction)
     ++m_moves_count;
 
     calculate_score_and_max_value();
+    check_status                 ();
 
-    return m_moved_blocks;
+    return m_move_result;
 }
 
 int GameCore::get_moves_count() const
@@ -203,14 +208,7 @@ int GameCore::get_moves_count() const
 }
 
 
-bool GameCore::has_valid_moves() const
-{
-    return is_valid_move(Direction::Left ) ||
-           is_valid_move(Direction::Up   ) ||
-           is_valid_move(Direction::Right) ||
-           is_valid_move(Direction::Down );
-}
-
+//
 bool GameCore::is_valid_move(Direction direction) const
 {
     auto dir_coord = direction_2_coord(direction);
@@ -226,13 +224,14 @@ bool GameCore::is_valid_move(Direction direction) const
     return false;
 }
 
-
 bool GameCore::is_valid_coord(const CoreCoord::Coord &coord) const
 {
     return coord.y >= 0 && coord.y < m_board.size   ()
         && coord.x >= 0 && coord.x < m_board[0].size();
 }
 
+
+//
 CoreGame::Status GameCore::get_status() const
 {
     return m_status;
@@ -243,7 +242,13 @@ int GameCore::get_score() const
     return m_score;
 }
 
+int GameCore::get_max_value() const
+{
+    return m_max_value;
+}
 
+
+//
 int GameCore::get_seed() const
 {
     return m_random.getSeed();
@@ -254,7 +259,7 @@ bool GameCore::is_using_random_seed() const
     return m_random.isUsingRandomSeed();
 }
 
-
+//
 std::string GameCore::ascii() const
 {
     std::stringstream ss;
@@ -266,6 +271,8 @@ std::string GameCore::ascii() const
             {
                 ss << "[";
 
+                if(p_block->get_value() < 100)
+                    ss << " ";
                 if(p_block->get_value() < 10)
                     ss << " ";
 
@@ -319,10 +326,8 @@ void GameCore::merge(const Line &line, const CoreCoord::Coord &dir_coord)
         reset_block_at(p_block->get_coord());
         p_target_block->set_value(p_target_block->get_value() * 2);
 
-        m_merged_blocks.push_back (p_target_block);
-        m_removed_blocks.push_back(p_block);
-
-        cout << ascii() << endl;
+        m_move_result.merged_blocks.push_back (p_target_block);
+        m_move_result.removed_blocks.push_back(p_block);
     }
 }
 
@@ -350,16 +355,15 @@ bool GameCore::move(const Line &line, const CoreCoord::Coord &dir_coord)
         reset_block_at(p_block->get_coord());
         put_block_at  (target_coord, p_block);
 
-        m_moved_blocks.push_back(p_block);
+        m_move_result.moved_blocks.push_back(p_block);
         moved = true;
-
-        cout << ascii() << endl;
     }
 
     return moved;
 }
 
 
+//
 bool GameCore::can_merge_line(
     const Line             &line,
     const CoreCoord::Coord &dir_coord) const
@@ -400,6 +404,7 @@ bool GameCore::can_move_line(
 }
 
 
+//
 Block::SPtr GameCore::find_first_same_value_block(
     Block::SPtr            p_src_block,
     const CoreCoord::Coord &dir_coord) const
@@ -437,7 +442,6 @@ Block::SPtr GameCore::find_first_same_value_block(
     return nullptr;
 }
 
-
 CoreCoord::Coord GameCore::find_last_empty_coord(
     Block::SPtr            p_src_block,
     const CoreCoord::Coord &dir_coord) const
@@ -466,16 +470,18 @@ CoreCoord::Coord GameCore::find_last_empty_coord(
 }
 
 
+//
 bool GameCore::is_already_merged(Block::SPtr p_block) const
 {
     return std::find(
-        std::begin(m_merged_blocks),
-        std::end  (m_merged_blocks),
+        std::begin(m_move_result.merged_blocks),
+        std::end  (m_move_result.merged_blocks),
         p_block
-    ) != std::end(m_merged_blocks);
+    ) != std::end(m_move_result.merged_blocks);
 }
 
 
+//
 void GameCore::put_block_at(
     const CoreCoord::Coord &coord,
     const Block::SPtr      p_block)
@@ -496,6 +502,7 @@ void GameCore::reset_block_at(const CoreCoord::Coord &coord)
 }
 
 
+//
 void GameCore::calculate_score_and_max_value()
 {
     m_score     = 0;
@@ -518,3 +525,21 @@ void GameCore::calculate_score_and_max_value()
     mp_values_generator->set_max_value(m_max_value);
 }
 
+void GameCore::check_status()
+{
+    if(m_max_value >= k_victory_value)
+    {
+        m_status = CoreGame::Status::Victory;
+    }
+    else if(is_valid_move(Direction::Up   ) ||
+            is_valid_move(Direction::Down ) ||
+            is_valid_move(Direction::Left ) ||
+            is_valid_move(Direction::Right))
+    {
+        m_status = CoreGame::Status::Continue;
+    }
+    else
+    {
+        m_status = CoreGame::Status::Defeat;
+    }
+}

@@ -64,6 +64,15 @@ public:
     };
 
 
+    // Inner Types //
+public:
+    struct MoveResult
+    {
+        std::vector<Block::SPtr> moved_blocks;
+        std::vector<Block::SPtr> merged_blocks;
+        std::vector<Block::SPtr> removed_blocks;
+    };
+
     // CTOR / DTOR //
 public:
      GameCore(
@@ -81,15 +90,15 @@ public:
     const Block::SPtr get_block_at(const CoreCoord::Coord &coord) const;
     const Board&      get_board() const;
 
-    const std::vector<Block::SPtr>& make_move(Direction direction);
-    int  get_moves_count() const;
+    const MoveResult& make_move(Direction direction);
+    int               get_moves_count() const;
 
-    bool is_valid_move  (Direction direction) const;
-    bool has_valid_moves() const;
-
+    bool             is_valid_move (Direction direction) const;
     bool             is_valid_coord(const CoreCoord::Coord &coord) const;
-    CoreGame::Status get_status    () const;
-    int              get_score     () const;
+
+    CoreGame::Status get_status   () const;
+    int              get_score    () const;
+    int              get_max_value() const;
 
     int  get_seed() const;
     bool is_using_random_seed() const;
@@ -119,6 +128,7 @@ private:
     void reset_block_at(const CoreCoord::Coord &coord);
 
     void calculate_score_and_max_value();
+    void check_status                 ();
 
 
     // iVars //
@@ -134,8 +144,6 @@ private:
     CoreGame::Status   m_status;
     CoreRandom::Random m_random;
 
-    std::vector<Block::SPtr> m_moved_blocks;
-    std::vector<Block::SPtr> m_merged_blocks;
-    std::vector<Block::SPtr> m_removed_blocks;
+    MoveResult m_move_result;
 };
 NS_CORE2048_END
