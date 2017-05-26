@@ -41,10 +41,10 @@
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
-#include "termcolor.h"
 #include <sstream>
 #include <cmath>
 #include <cstdlib>
+#include "termcolor.h"
 #include "../include/PresetValuesGenerator.h"
 
 using namespace std;
@@ -99,7 +99,7 @@ void print_board(const GameCore::Board &board, Block::SPtr p_gen_block)
 
 int main()
 {
-    auto values_gen = PresetValuesGenerator("values.txt");
+    auto values_gen = PresetValuesGenerator("./resources/values.txt");
     auto core       = GameCore(&values_gen, 4, 4, 150);
 
     std::stringstream ss;
@@ -131,12 +131,13 @@ int main()
         if(core.is_valid_move(dir))
         {
             auto a = core.make_move(dir);
-            cout << a.moved_blocks[0]->get_old_coord() << endl;
-            cout << a.moved_blocks[0]->get_coord() << endl;
+            if(a.moved_blocks.size() != 0)
+            {
+                cout << a.moved_blocks[0]->get_old_coord() << endl;
+                cout << a.moved_blocks[0]->get_coord() << endl;
+            }
 
             p_block = core.generate_next_block();
         }
-
-
     }
 }
