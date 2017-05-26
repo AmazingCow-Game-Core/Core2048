@@ -60,7 +60,6 @@ public:
     typedef std::shared_ptr<Block> SPtr;
 
 
-
     // CTOR / DTOR //
 public:
     Block(const CoreCoord::Coord &coord, int value);

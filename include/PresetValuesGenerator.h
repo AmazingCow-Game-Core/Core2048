@@ -70,7 +70,7 @@ public:
 
     // iVars //
 private:
-    int m_max_value;
+    int          m_max_value;
     ValuesMatrix m_values_matrix;
 };
 
