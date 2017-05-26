@@ -1,0 +1,23 @@
+/**
+@mainpage The Core2048 documentation.
+
+__Core2048__  Game Core for 2048 Game.
+
+You can use it as a "lib" for making 2048 Game in C++ concentrating
+your efforts in making a cool game interface and letting the logic of the
+game alone.
+
+
+You may find interesting take a look in:
+
+- @ref GameCore class documentation - The fun is there.
+\n\n
+
+- [Project GitHub](https://www.github.com/AmazingCow-Game-Core/Core2048/). \n
+- [AmazingCow Open Source Projects](http://opensource.amazingcow.com).
+
+
+You are __very welcomed__ to __share__ and __hack__ it.
+
+Thank you and we hope that you enjoy __Core2048__.
+*/
