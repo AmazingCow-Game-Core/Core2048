@@ -60,6 +60,8 @@ private:
 
     // CTOR //
 public:
+    ///@brief Constructs a ValueGenerator based on the specs found on file.
+    ///@note An example of such file is found in ./resouces/values.txt
     PresetValuesGenerator(const std::string &filename);
 
 
