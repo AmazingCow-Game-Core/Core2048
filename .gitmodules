@@ -7,3 +7,6 @@
 [submodule "lib/CoreGame"]
 	path = lib/CoreGame
 	url = https://github.com/AmazingCow-Game-Core/CoreGame
+[submodule "test_game/lib/termcolor_cpp"]
+	path = test_game/lib/termcolor_cpp
+	url = https://github.com/AmazingCow-Libs/termcolor_cpp
