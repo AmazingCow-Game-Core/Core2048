@@ -198,7 +198,7 @@ public:
     bool is_using_random_seed() const;
 
     ///@brief
-    //  Just for debug purposes... get a nice formated representation of game.
+    ///  Just for debug purposes... get a nice formated representation of game.
     std::string ascii() const;
 
 
