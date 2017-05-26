@@ -48,6 +48,8 @@ NS_CORE2048_BEGIN
 
 class IValuesGenerator
 {
+    //COWTODO: We should disable the CTORs, copy / move operators, etc...
+
     // Interface Methods //
 public:
     virtual int  generate_value(CoreRandom::Random &rnd_gen) = 0;
