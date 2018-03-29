@@ -56,6 +56,8 @@ public:
         std::vector<Block::SPtr> moved_blocks;
         std::vector<Block::SPtr> merged_blocks;
         std::vector<Block::SPtr> removed_blocks;
+
+        bool move_valid;
     };
 
 
@@ -81,11 +83,11 @@ public:
         IValuesGenerator *p_values_generator,
         int width,
         int height,
-        int seed = CoreRandom::Random::kRandomSeed);
+        int seed = CoreRandom::Random::kRandomSeed) noexcept;
 
     ///-------------------------------------------------------------------------
     /// @brief Destructs the object.
-    ~GameCore();
+    inline ~GameCore() = default noexcept;
 
 
     //------------------------------------------------------------------------//
@@ -96,7 +98,7 @@ public:
     /// @brief Generates the new game block.
     /// @returns A const shared pointer for the new game block.
     /// @see IValuesGenerator.
-    const Block::SPtr generate_next_block();
+    const Block::SPtr generate_next_block() noexcept;
 
     ///-------------------------------------------------------------------------
     /// @brief Gets a block at given coord.
@@ -105,13 +107,28 @@ public:
     ///    There is no valid check on the given arguments, is user
     ///    responsibility give meaningful values.
     /// @see get_board(), is_valid_coord().
-    const Block::SPtr get_block_at(const CoreCoord::Coord &coord) const;
+    constexpr inline const Block::SPtr
+    get_block_at(const CoreCoord::Coord &coord) const noexcept
+    {
+        COREGAME_ASSERT_ARGS(
+            is_valid_coord(coord),
+            "Coord (%d,%d) is not valid",
+            coord.y,
+            coord.x
+        );
+
+        return m_board[coord.y][coord.x];
+    }
 
     ///-------------------------------------------------------------------------
     /// @brief Gets the current state of game board.
     /// @returns A const reference of the game board.
     /// @see get_block_at(), Board.
-    const Board& get_board() const;
+    constexpr inline const Board&
+    get_board() const noexcept
+    {
+        return m_board;
+    }
 
     ///-------------------------------------------------------------------------
     /// @brief Makes a move towards the given direction.
@@ -131,12 +148,16 @@ public:
     ///    Any valid direction.
     /// @see
     ///    Direction, MoveResult, get_moves_count, get_status(), is_valid_move()
-    const MoveResult& make_move(Direction direction);
+    const MoveResult& make_move(Direction direction) noexcept;
 
     ///-------------------------------------------------------------------------
     /// @brief Gets how many moves player did so far.
     /// @returns The count of moves that player did.
-    int get_moves_count() const;
+    constexpr inline u32
+    get_moves_count() const noexcept
+    {
+        return m_moves_count;
+    }
 
 
     ///-------------------------------------------------------------------------
@@ -146,7 +167,7 @@ public:
     ///    false otherwise.
     /// @param direction - The direction that player wants to move.
     /// @see make_move(), is_valid_coord().
-    bool is_valid_move(Direction direction) const;
+    bool is_valid_move(Direction direction) const noexcept;
 
     ///-------------------------------------------------------------------------
     /// @brief Checks if a coord is in range of the game board bounds.
@@ -154,7 +175,12 @@ public:
     ///    True, if coord is in board bounds, false otherwise.
     /// @param coord - The coord to test.
     /// @see get_block_at(), is_valid_coord().
-    bool is_valid_coord(const CoreCoord::Coord &coord) const;
+    constexpr inline bool
+    is_valid_coord(const CoreCoord::Coord &coord) const noexcept
+    {
+        return coord.y >= 0 && coord.y < m_board.size   ()
+            && coord.x >= 0 && coord.x < m_board[0].size();
+    }
 
 
     ///-------------------------------------------------------------------------
@@ -163,60 +189,112 @@ public:
     ///    User should call this after each make_move call.
     /// @returns The current game status.
     /// @see make_move().
-    CoreGame::Status get_status() const;
+    constexpr inline CoreGame::Status
+    get_status() const noexcept
+    {
+        return m_status;
+    }
 
     ///-------------------------------------------------------------------------
     /// @brief Gets the summation of all current blocks.
     /// @returns The summation of all current blocks.
     /// @see get_max_value().
-    int get_score() const;
+    constexpr inline u32
+    get_score() const noexcept
+    {
+        return m_score;
+    }
 
     ///-------------------------------------------------------------------------
     /// @brief Gets the higher value of the current blocks.
     /// @returns The higher current blocks.
     /// @see get_score().
-    int get_max_value() const;
+    constexpr inline u32
+    get_max_value() const noexcept
+    {
+        return m_max_value;
+    }
 
 
     ///-------------------------------------------------------------------------
     /// @brief Gets the actual seed that game is using
-    int get_seed() const;
+    constexpr inline i32
+    get_seed() const noexcept
+    {
+        return m_random.getSeed();
+    }
 
     ///-------------------------------------------------------------------------
     /// @brief Gets if CoreRandom is actually using a random seed.
-    bool is_using_random_seed() const;
+    constexpr inline
+    is_using_random_seed() const noexcept
+    {
+        return m_random.isUsingRandomSeed();
+    }
 
     ///-------------------------------------------------------------------------
     ///@brief
     ///  Just for debug purposes... get a nice formated representation of game.
-    std::string ascii() const;
+    std::string ascii() const noexcept;
 
 
     //------------------------------------------------------------------------//
     // Private Methods                                                        //
     //------------------------------------------------------------------------//
 private:
-    void merge(const Line &line, const CoreCoord::Coord &dir_coord);
-    bool move (const Line &line, const CoreCoord::Coord &dir_coord);
+    void merge(const Line &line, const CoreCoord::Coord &dir_coord) noexcept;
+    bool move (const Line &line, const CoreCoord::Coord &dir_coord) noexcept;
 
-    bool can_merge_line(const Line &line, const CoreCoord::Coord &dir_coord) const;
-    bool can_move_line (const Line &line, const CoreCoord::Coord &dir_coord) const;
+    bool can_merge_line(
+        const Line             &line,
+        const CoreCoord::Coord &dir_coord) const noexcept;
+
+    bool can_move_line(
+        const Line             &line,
+        const CoreCoord::Coord &dir_coord) const noexcept;
+
 
     Block::SPtr find_first_same_value_block(
         Block::SPtr            p_src_block,
-        const CoreCoord::Coord &dir_coord) const;
+        const CoreCoord::Coord &dir_coord) const noexcept;
 
     CoreCoord::Coord find_last_empty_coord(
         Block::SPtr            p_src_block,
-        const CoreCoord::Coord &dir_coord) const;
+        const CoreCoord::Coord &dir_coord) const noexcept;
 
-    bool is_already_merged(Block::SPtr p_block) const;
+    inline bool
+    is_already_merged(Block::SPtr p_block) const noexcept
+    {
+        return std::find(
+            std::begin(m_move_result.merged_blocks),
+            std::end  (m_move_result.merged_blocks),
+            p_block
+        ) != std::end(m_move_result.merged_blocks);
+    }
 
-    void put_block_at  (const CoreCoord::Coord &coord, const Block::SPtr p_block);
-    void reset_block_at(const CoreCoord::Coord &coord);
+    inline void
+    put_block_at(
+        const CoreCoord::Coord &coord,
+        const Block::SPtr      p_block) noexcept
+    {
+        COREGAME_ASSERT_ARGS(
+            is_valid_coord(coord),
+            "Coord(%d, %d) is not valid",
+            coord.y, coord.x
+        );
 
-    void calculate_score_and_max_value();
-    void check_status                 ();
+        p_block->set_coord(coord);
+        m_board[coord.y][coord.x] = p_block;
+    }
+
+    inline void
+    reset_block_at(const CoreCoord::Coord &coord) noexcept
+    {
+        m_board[coord.y][coord.x] = nullptr;
+    }
+
+    void calculate_score_and_max_value() noexcept;
+    void check_status                 () noexcept;
 
 
     //------------------------------------------------------------------------//
