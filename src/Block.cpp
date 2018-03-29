@@ -16,11 +16,6 @@ Block::Block(const CoreCoord::Coord &coord, int value) :
     // Empty...
 }
 
-Block::~Block()
-{
-    // Empty...
-}
-
 
 //----------------------------------------------------------------------------//
 // Public Methods                                                             //
