@@ -41,11 +41,19 @@ public:
     /// @note
     ///    There's no checking to ensure that the values are
     ///    valid, is user responsibility to give meaningful values.
-    Block(const CoreCoord::Coord &coord, int value);
+    inline
+    Block(const CoreCoord::Coord &coord, int value) noexcept
+        : m_coord    (coord)
+        , m_value    (value)
+        , m_old_coord(coord)
+        , m_old_value(value)
+    {
+        // Empty...
+    }
 
     ///-------------------------------------------------------------------------
     /// @brief Destructs the Block instance.
-    ~Block() = default;
+    inline ~Block() = default noexcept;
 
 
     //------------------------------------------------------------------------//
@@ -56,13 +64,22 @@ public:
     /// @brief Gets the current coord of block.
     /// @returns The current coord of block.
     /// @see get_value(), get_old_coord(), get_old_value().
-    const CoreCoord::Coord get_coord() const;
+    constexpr inline const CoreCoord::Coord
+    get_coord() const noexcept
+    {
+        return m_coord;
+    }
 
     ///-------------------------------------------------------------------------
     /// @brief Gets the current value of block.
     /// @returns The current value of block.
     /// @see get_coord(), get_old_coord(), get_old_value().
-    int get_value() const;
+    constexpr inline u32
+    get_value() const noexcept
+    {
+        return m_value;
+    }
+
 
     ///-------------------------------------------------------------------------
     /// @brief Gets the previous coord of block.
@@ -70,7 +87,11 @@ public:
     ///   The previous coord of the block, if there's no
     ///   previous coord, this will return the current coord.
     /// @see get_coord(), get_old_coord(), get_old_value().
-    const CoreCoord::Coord get_old_coord() const;
+    constexpr inline const CoreCoord::Coord
+    get_old_coord() const noexcept
+    {
+        return m_old_coord;
+    }
 
     ///-------------------------------------------------------------------------
     /// @brief Gets the previous value of block.
@@ -78,7 +99,11 @@ public:
     ///   The previous value of block, if there's no
     ///   previous value, this will return the current value.
     /// @see get_coord(), get_old_coord(), get_value().
-    int get_old_value() const;
+    constexpr inline u32
+    get_old_value() const noexcept
+    {
+        return m_old_value;
+    }
 
 
     //------------------------------------------------------------------------//
@@ -87,8 +112,19 @@ public:
 private:
     //--------------------------------------------------------------------------
     // Only accessible to CoreGame.
-    void set_coord(const CoreCoord::Coord &coord);
-    void set_value(int value);
+    inline void
+    set_coord(const CoreCoord::Coord &coord) noexcept
+    {
+        m_old_coord = m_coord;
+        m_coord     = coord;
+    }
+
+    inline void
+    set_value(u32 value) noexcept
+    {
+        m_old_value = m_value;
+        m_value     = value;
+    }
 
 
     //------------------------------------------------------------------------//
@@ -100,6 +136,6 @@ private:
 
     CoreCoord::Coord m_old_coord;
     int              m_old_value;
-};
+}; // class Block
 
 NS_CORE2048_END
