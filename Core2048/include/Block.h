@@ -3,7 +3,7 @@
 // std
 #include <memory> // shared_ptr
 // AmazingCow Libs
-#include "CoreCoord.h"
+#include "acow/math_goodies.h"
 // Core2048
 #include "Core2048_Utils.h"
 
@@ -42,7 +42,7 @@ public:
     ///    There's no checking to ensure that the values are
     ///    valid, is user responsibility to give meaningful values.
     inline
-    Block(const CoreCoord::Coord &coord, int value) noexcept
+    Block(const acow::math::Coord &coord, u32 value) noexcept
         : m_coord    (coord)
         , m_value    (value)
         , m_old_coord(coord)
@@ -53,7 +53,7 @@ public:
 
     ///-------------------------------------------------------------------------
     /// @brief Destructs the Block instance.
-    inline ~Block() = default noexcept;
+    inline ~Block() noexcept = default;
 
 
     //------------------------------------------------------------------------//
@@ -64,7 +64,7 @@ public:
     /// @brief Gets the current coord of block.
     /// @returns The current coord of block.
     /// @see get_value(), get_old_coord(), get_old_value().
-    constexpr inline const CoreCoord::Coord
+    constexpr inline const acow::math::Coord
     get_coord() const noexcept
     {
         return m_coord;
@@ -87,7 +87,7 @@ public:
     ///   The previous coord of the block, if there's no
     ///   previous coord, this will return the current coord.
     /// @see get_coord(), get_old_coord(), get_old_value().
-    constexpr inline const CoreCoord::Coord
+    constexpr inline const acow::math::Coord
     get_old_coord() const noexcept
     {
         return m_old_coord;
@@ -113,7 +113,7 @@ private:
     //--------------------------------------------------------------------------
     // Only accessible to CoreGame.
     inline void
-    set_coord(const CoreCoord::Coord &coord) noexcept
+    set_coord(const acow::math::Coord &coord) noexcept
     {
         m_old_coord = m_coord;
         m_coord     = coord;
@@ -131,11 +131,11 @@ private:
     // iVars                                                                  //
     //------------------------------------------------------------------------//
 private:
-    CoreCoord::Coord m_coord;
-    int              m_value;
+    acow::math::Coord m_coord;
+    u32               m_value;
 
-    CoreCoord::Coord m_old_coord;
-    int              m_old_value;
+    acow::math::Coord m_old_coord;
+    u32               m_old_value;
 }; // class Block
 
 NS_CORE2048_END

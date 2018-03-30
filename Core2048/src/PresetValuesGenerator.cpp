@@ -4,7 +4,8 @@
 #include <fstream>
 #include <sstream>
 // AmazingCow Libs.
-#include "CoreGame.h"
+#include "CoreAssert/CoreAssert.h"
+#include "CoreGame/CoreGame.h"
 
 // Usings
 USING_NS_CORE2048;
@@ -19,7 +20,7 @@ PresetValuesGenerator::PresetValuesGenerator(const std::string &filename)
     std::ifstream in_stream;
     in_stream.open(filename);
 
-    COREGAME_ASSERT_ARGS(
+    COREASSERT_ASSERT(
         in_stream.is_open(),
         "Cannot open file: (%s)",
         filename.c_str()
@@ -36,7 +37,7 @@ PresetValuesGenerator::PresetValuesGenerator(const std::string &filename)
         std::string line;
         std::getline(in_stream, line);
 
-        //Comments - Ignore.
+        // Comments - Ignore.
         if(line.size() != 0 && line[0] == '#')
             continue;
 
@@ -70,13 +71,13 @@ PresetValuesGenerator::PresetValuesGenerator(const std::string &filename)
 //----------------------------------------------------------------------------//
 int PresetValuesGenerator::generate_value(CoreRandom::Random &rnd_gen)
 {
-    COREGAME_ASSERT_ARGS(
+    COREASSERT_ASSERT(
         (m_max_value >= 2),
         "m_max_value(%d) must be >= 2.",
         m_max_value
     );
 
-    COREGAME_ASSERT_ARGS(
+    COREASSERT_ASSERT(
         m_values_matrix.find(m_max_value) != m_values_matrix.end(),
         "m_max_value(%d) don't exists... check your input data.",
         m_max_value
@@ -98,13 +99,13 @@ int PresetValuesGenerator::generate_value(CoreRandom::Random &rnd_gen)
             return gen_per_vec[i].first;
     }
 
-    COREGAME_ASSERT(false, "Cannot be here...");
+    COREASSERT_ASSERT(false, "Cannot be here...");
     return -1; //Makes compiler happy...
 }
 
 void PresetValuesGenerator::set_max_value(int value)
 {
-    COREGAME_ASSERT_ARGS(
+    COREASSERT_ASSERT(
         (value >= 2),
         "value(%d) must be >= 2.",
         value

@@ -1,6 +1,6 @@
 #pragma once
 // AmazingCow Libs.
-#include "CoreRandom.h"
+#include "CoreRandom/CoreRandom.h"
 // Core2048
 #include "Core2048_Utils.h"
 

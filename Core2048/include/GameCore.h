@@ -2,8 +2,9 @@
 // std
 #include <vector>
 // AmazingCow Libs
-#include "CoreGame.h"
-#include "CoreCoord.h"
+#include "acow/math_goodies.h"
+#include "CoreGame/CoreGame.h"
+#include "CoreAssert/CoreAssert.h"
 // Core2048
 #include "Core2048_Utils.h"
 #include "Block.h"
@@ -81,13 +82,13 @@ public:
     ///    responsibility give meaningful values.
     GameCore(
         IValuesGenerator *p_values_generator,
-        int width,
-        int height,
-        int seed = CoreRandom::Random::kRandomSeed) noexcept;
+        u32 width,
+        u32 height,
+        i32 seed = CoreRandom::Random::kRandomSeed) noexcept;
 
     ///-------------------------------------------------------------------------
     /// @brief Destructs the object.
-    inline ~GameCore() = default noexcept;
+    inline ~GameCore() noexcept = default;
 
 
     //------------------------------------------------------------------------//
@@ -107,10 +108,10 @@ public:
     ///    There is no valid check on the given arguments, is user
     ///    responsibility give meaningful values.
     /// @see get_board(), is_valid_coord().
-    constexpr inline const Block::SPtr
-    get_block_at(const CoreCoord::Coord &coord) const noexcept
+    inline const Block::SPtr
+    get_block_at(const acow::math::Coord &coord) const noexcept
     {
-        COREGAME_ASSERT_ARGS(
+        COREASSERT_ASSERT(
             is_valid_coord(coord),
             "Coord (%d,%d) is not valid",
             coord.y,
@@ -176,7 +177,7 @@ public:
     /// @param coord - The coord to test.
     /// @see get_block_at(), is_valid_coord().
     constexpr inline bool
-    is_valid_coord(const CoreCoord::Coord &coord) const noexcept
+    is_valid_coord(const acow::math::Coord &coord) const noexcept
     {
         return coord.y >= 0 && coord.y < m_board.size   ()
             && coord.x >= 0 && coord.x < m_board[0].size();
@@ -218,7 +219,7 @@ public:
 
     ///-------------------------------------------------------------------------
     /// @brief Gets the actual seed that game is using
-    constexpr inline i32
+    inline i32
     get_seed() const noexcept
     {
         return m_random.getSeed();
@@ -226,7 +227,7 @@ public:
 
     ///-------------------------------------------------------------------------
     /// @brief Gets if CoreRandom is actually using a random seed.
-    constexpr inline
+    inline bool
     is_using_random_seed() const noexcept
     {
         return m_random.isUsingRandomSeed();
@@ -242,42 +243,42 @@ public:
     // Private Methods                                                        //
     //------------------------------------------------------------------------//
 private:
-    void merge(const Line &line, const CoreCoord::Coord &dir_coord) noexcept;
-    bool move (const Line &line, const CoreCoord::Coord &dir_coord) noexcept;
+    void merge(const Line &line, const acow::math::Coord &dir_coord) noexcept;
+    bool move (const Line &line, const acow::math::Coord &dir_coord) noexcept;
 
     bool can_merge_line(
         const Line             &line,
-        const CoreCoord::Coord &dir_coord) const noexcept;
+        const acow::math::Coord &dir_coord) const noexcept;
 
     bool can_move_line(
         const Line             &line,
-        const CoreCoord::Coord &dir_coord) const noexcept;
+        const acow::math::Coord &dir_coord) const noexcept;
 
 
     Block::SPtr find_first_same_value_block(
         Block::SPtr            p_src_block,
-        const CoreCoord::Coord &dir_coord) const noexcept;
+        const acow::math::Coord &dir_coord) const noexcept;
 
-    CoreCoord::Coord find_last_empty_coord(
+    acow::math::Coord find_last_empty_coord(
         Block::SPtr            p_src_block,
-        const CoreCoord::Coord &dir_coord) const noexcept;
+        const acow::math::Coord &dir_coord) const noexcept;
 
     inline bool
     is_already_merged(Block::SPtr p_block) const noexcept
     {
-        return std::find(
-            std::begin(m_move_result.merged_blocks),
-            std::end  (m_move_result.merged_blocks),
-            p_block
-        ) != std::end(m_move_result.merged_blocks);
+        // return std::find(
+        //     std::begin(m_move_result.merged_blocks),
+        //     std::end  (m_move_result.merged_blocks),
+        //     p_block
+        // ) != std::end(m_move_result.merged_blocks);
     }
 
     inline void
     put_block_at(
-        const CoreCoord::Coord &coord,
+        const acow::math::Coord &coord,
         const Block::SPtr      p_block) noexcept
     {
-        COREGAME_ASSERT_ARGS(
+        COREASSERT_ASSERT(
             is_valid_coord(coord),
             "Coord(%d, %d) is not valid",
             coord.y, coord.x
@@ -288,7 +289,7 @@ private:
     }
 
     inline void
-    reset_block_at(const CoreCoord::Coord &coord) noexcept
+    reset_block_at(const acow::math::Coord &coord) noexcept
     {
         m_board[coord.y][coord.x] = nullptr;
     }

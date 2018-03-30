@@ -24,7 +24,7 @@ template <typename T>
 std::tuple<int, int, int>
 for_values_helper(
     const T                &container,
-    const CoreCoord::Coord &dir_coord)
+    const acow::math::Coord &dir_coord)
 {
     //--------------------------------------------------------------------------
     // Assume that we're moving to Left or Up.
@@ -44,13 +44,13 @@ for_values_helper(
     return std::make_tuple(inclusive_begin, exclusive_end, sum_value);
 }
 
-CoreCoord::Coord
+acow::math::Coord
 direction_2_coord(GameCore::Direction dir) noexcept
 {
-    return (dir == GameCore::Direction::Up  ) ? CoreCoord::Coord::Up  () :
-           (dir == GameCore::Direction::Down) ? CoreCoord::Coord::Down() :
-           (dir == GameCore::Direction::Left) ? CoreCoord::Coord::Left() :
-                                                CoreCoord::Coord::Right();
+    return (dir == GameCore::Direction::Up  ) ? acow::math::Coord::Up  () :
+           (dir == GameCore::Direction::Down) ? acow::math::Coord::Down() :
+           (dir == GameCore::Direction::Left) ? acow::math::Coord::Left() :
+                                                acow::math::Coord::Right();
 }
 
 
@@ -59,17 +59,16 @@ direction_2_coord(GameCore::Direction dir) noexcept
 //----------------------------------------------------------------------------//
 GameCore::GameCore(
     IValuesGenerator *p_values_generator,
-    int width,
-    int height,
-    int seed
-) :
-    mp_values_generator(p_values_generator),
-    m_max_value(k_lesser_value),
-    m_score    (0),
-    m_status   (CoreGame::Status::Continue),
-    m_random   (seed)
+    u32 width,
+    u32 height,
+    i32 seed) noexcept
+    : mp_values_generator(p_values_generator)
+    , m_max_value(k_lesser_value)
+    , m_score    (0)
+    , m_status   (CoreGame::Status::Continue)
+    , m_random   (seed)
 {
-    COREGAME_ASSERT_ARGS(
+    COREASSERT_ASSERT(
         (width > 0 && height > 0),
         "Width(%d) and Height(%d) must be positive.",
         width,
@@ -90,9 +89,9 @@ GameCore::GameCore(
 // Public Methods                                                             //
 //----------------------------------------------------------------------------//
 const Block::SPtr
-GameCore::generate_next_block()
+GameCore::generate_next_block() noexcept
 {
-    auto coord = CoreCoord::Coord();
+    auto coord = acow::math::Coord();
     // COWTODO(n2omatt): Check if has empty blocks first...
     while(1)
     {
@@ -115,7 +114,7 @@ GameCore::generate_next_block()
 
 //
 const GameCore::MoveResult&
-GameCore::make_move(Direction direction)
+GameCore::make_move(Direction direction) noexcept
 {
     //--------------------------------------------------------------------------
     // Clear the previous data.
@@ -208,7 +207,7 @@ GameCore::ascii() const noexcept
 // Private Methods                                                            //
 //----------------------------------------------------------------------------//
 void
-GameCore::merge(const Line &line, const CoreCoord::Coord &dir_coord) noexcept
+GameCore::merge(const Line &line, const acow::math::Coord &dir_coord) noexcept
 {
     auto for_values = for_values_helper(line, dir_coord);
     for(int i  = std::get<0>(for_values);
@@ -253,7 +252,7 @@ GameCore::merge(const Line &line, const CoreCoord::Coord &dir_coord) noexcept
 }
 
 bool
-GameCore::move(const Line &line, const CoreCoord::Coord &dir_coord) noexcept
+GameCore::move(const Line &line, const acow::math::Coord &dir_coord) noexcept
 {
     bool moved = false;
 
@@ -290,7 +289,7 @@ GameCore::move(const Line &line, const CoreCoord::Coord &dir_coord) noexcept
 bool
 GameCore::can_merge_line(
     const Line             &line,
-    const CoreCoord::Coord &dir_coord) const noexcept
+    const acow::math::Coord &dir_coord) const noexcept
 {
 
     for(auto p_block : line)
@@ -313,8 +312,8 @@ GameCore::can_merge_line(
 
 bool
 GameCore::can_move_line(
-    const Line             &line,
-    const CoreCoord::Coord &dir_coord) const
+    const Line              &line,
+    const acow::math::Coord &dir_coord) const noexcept
 {
     for(auto p_block : line)
     {
@@ -338,9 +337,9 @@ GameCore::can_move_line(
 Block::SPtr
 GameCore::find_first_same_value_block(
     Block::SPtr            p_src_block,
-    const CoreCoord::Coord &dir_coord) const
+    const acow::math::Coord &dir_coord) const noexcept
 {
-    COREGAME_ASSERT(
+    COREASSERT_ASSERT(
         p_src_block != nullptr,
         "p_src_block cannot be nullptr"
     );
@@ -381,12 +380,12 @@ GameCore::find_first_same_value_block(
     return nullptr;
 }
 
-CoreCoord::Coord
+acow::math::Coord
 GameCore::find_last_empty_coord(
     Block::SPtr            p_src_block,
-    const CoreCoord::Coord &dir_coord) const noexcept
+    const acow::math::Coord &dir_coord) const noexcept
 {
-    COREGAME_ASSERT(
+    COREASSERT_ASSERT(
         p_src_block != nullptr,
         "p_src_block cannot be nullptr"
     );
@@ -407,13 +406,14 @@ GameCore::find_last_empty_coord(
             return curr_coord + (dir_coord * -1);
     }
 
-    COREGAME_ASSERT(false, "Cannot be here");
+    COREASSERT_ASSERT(false, "Cannot be here");
 }
 
 
 
 //
-void GameCore::calculate_score_and_max_value()
+void
+GameCore::calculate_score_and_max_value() noexcept
 {
     m_score     = 0;
     m_max_value = k_lesser_value;
@@ -428,14 +428,15 @@ void GameCore::calculate_score_and_max_value()
             auto value = p_block->get_value();
 
             m_score     += value;
-            m_max_value  = std::max(m_max_value, value);
+            m_max_value  = acow::math::Max(m_max_value, value);
         }
     }
 
     mp_values_generator->set_max_value(m_max_value);
 }
 
-void GameCore::check_status()
+void
+GameCore::check_status() noexcept
 {
     if(m_max_value >= k_victory_value)
     {
