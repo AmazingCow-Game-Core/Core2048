@@ -11,10 +11,12 @@
 USING_NS_CORE2048;
 
 
+
 //----------------------------------------------------------------------------//
 // CTOR                                                                       //
 //----------------------------------------------------------------------------//
-PresetValuesGenerator::PresetValuesGenerator(const std::string &filename)
+PresetValuesGenerator::PresetValuesGenerator(
+    const std::string &filename) noexcept
 {
     //Open File.
     std::ifstream in_stream;
@@ -41,14 +43,14 @@ PresetValuesGenerator::PresetValuesGenerator(const std::string &filename)
         if(line.size() != 0 && line[0] == '#')
             continue;
 
-        int  MaxCurrValue, GenMax, ChangePercent;
-        char dummy;
+        u32 MaxCurrValue, GenMax, ChangePercent;
+        u8  dummy;
 
         std::stringstream ss(line);
         ss >> MaxCurrValue >> dummy;
 
 
-        std::vector<std::pair<int, int>> gen_percent_vec;
+        std::vector<std::pair<u32, u32>> gen_percent_vec;
         while(!ss.eof())
         {
             std::string gen_per_token;
@@ -69,7 +71,8 @@ PresetValuesGenerator::PresetValuesGenerator(const std::string &filename)
 //----------------------------------------------------------------------------//
 // IValuesGenerator Interface                                                 //
 //----------------------------------------------------------------------------//
-int PresetValuesGenerator::generate_value(CoreRandom::Random &rnd_gen)
+u32
+PresetValuesGenerator::generate_value(CoreRandom::Random &rnd_gen) noexcept
 {
     COREASSERT_ASSERT(
         (m_max_value >= 2),
@@ -100,10 +103,11 @@ int PresetValuesGenerator::generate_value(CoreRandom::Random &rnd_gen)
     }
 
     COREASSERT_ASSERT(false, "Cannot be here...");
-    return -1; //Makes compiler happy...
+    return 0; // Makes compiler happy...
 }
 
-void PresetValuesGenerator::set_max_value(int value)
+void
+PresetValuesGenerator::set_max_value(u32 value) noexcept
 {
     COREASSERT_ASSERT(
         (value >= 2),
