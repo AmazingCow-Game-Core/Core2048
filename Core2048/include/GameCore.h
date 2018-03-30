@@ -1,5 +1,6 @@
 #pragma once
 // std
+#include <algorithm>
 #include <vector>
 // AmazingCow Libs
 #include "acow/math_goodies.h"
@@ -266,11 +267,11 @@ private:
     inline bool
     is_already_merged(Block::SPtr p_block) const noexcept
     {
-        // return std::find(
-        //     std::begin(m_move_result.merged_blocks),
-        //     std::end  (m_move_result.merged_blocks),
-        //     p_block
-        // ) != std::end(m_move_result.merged_blocks);
+         return std::find(
+             std::begin(m_move_result.merged_blocks),
+             std::end  (m_move_result.merged_blocks),
+             p_block
+         ) != std::end(m_move_result.merged_blocks);
     }
 
     inline void
