@@ -5,4 +5,3 @@ Version 0.1.0 - May 26, 2017
 -- General --
     First version release. Tried to implemented everything well and add
     the info files.
-
