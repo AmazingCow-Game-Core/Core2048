@@ -1,9 +1,9 @@
 #pragma once
 // AmazingCow Libs.
 #include "CoreRandom/CoreRandom.h"
+#include "acow/cpp_goodies.h"
 // Core2048
 #include "Core2048_Utils.h"
-
 
 NS_CORE2048_BEGIN
 
@@ -33,11 +33,12 @@ public:
     ///    The current CoreRandom::Random object that GameCore
     ///    is using to generate random numbers.
     /// @see set_max_value(), GameCore.
-    virtual int  generate_value(CoreRandom::Random &rnd_gen) = 0;
+    virtual u32 generate_value(CoreRandom::Random &rnd_gen) noexcept = 0;
 
     ///-------------------------------------------------------------------------
     /// @brief Set the max value on the current board.
-    virtual void set_max_value(int v) = 0;
+    virtual void set_max_value(u32 v) noexcept  = 0;
+
 }; // IValuesGenerator
 
 NS_CORE2048_END
