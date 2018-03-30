@@ -3,8 +3,8 @@
 //----------------------------------------------------------------------------//
 // Export Headers                                                             //
 //----------------------------------------------------------------------------//
-#include "Core2048_Utils.h"
-#include "GameCore.h"
-#include "Block.h"
-#include "IValuesGenerator.h"
-#include "PresetValuesGenerator.h"
+#include "include/Core2048_Utils.h"
+#include "include/GameCore.h"
+#include "include/Block.h"
+#include "include/IValuesGenerator.h"
+#include "include/PresetValuesGenerator.h"
