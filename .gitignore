@@ -3,3 +3,4 @@ build
 libs
 cmake-build-debug/
 .idea/
+lhcrc
