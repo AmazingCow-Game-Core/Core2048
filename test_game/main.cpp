@@ -1,65 +1,31 @@
-//----------------------------------------------------------------------------//
-//               █      █                                                     //
-//               ████████                                                     //
-//             ██        ██                                                   //
-//            ███  █  █  ███        main.cpp                                  //
-//            █ █        █ █        Core2048                                  //
-//             ████████████                                                   //
-//           █              █       Copyright (c) 2017                        //
-//          █     █    █     █      AmazingCow - www.AmazingCow.com           //
-//          █     █    █     █                                                //
-//           █              █       N2OMatt - n2omatt@amazingcow.com          //
-//             ████████████         www.amazingcow.com/n2omatt                //
-//                                                                            //
-//                  This software is licensed as GPLv3                        //
-//                 CHECK THE COPYING FILE TO MORE DETAILS                     //
-//                                                                            //
-//    Permission is granted to anyone to use this software for any purpose,   //
-//   including commercial applications, and to alter it and redistribute it   //
-//               freely, subject to the following restrictions:               //
-//                                                                            //
-//     0. You **CANNOT** change the type of the license.                      //
-//     1. The origin of this software must not be misrepresented;             //
-//        you must not claim that you wrote the original software.            //
-//     2. If you use this software in a product, an acknowledgment in the     //
-//        product IS HIGHLY APPRECIATED, both in source and binary forms.     //
-//        (See opensource.AmazingCow.com/acknowledgment.html for details).    //
-//        If you will not acknowledge, just send us a email. We'll be         //
-//        *VERY* happy to see our work being used by other people. :)         //
-//        The email is: acknowledgment_opensource@AmazingCow.com              //
-//     3. Altered source versions must be plainly marked as such,             //
-//        and must not be misrepresented as being the original software.      //
-//     4. This notice may not be removed or altered from any source           //
-//        distribution.                                                       //
-//     5. Most important, you must have fun. ;)                               //
-//                                                                            //
-//      Visit opensource.amazingcow.com for more open-source projects.        //
-//                                                                            //
-//                                  Enjoy :)                                  //
-//----------------------------------------------------------------------------//
-#include "../include/GameCore.h"
+
+// std
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
 #include <sstream>
 #include <cmath>
 #include <cstdlib>
-#include "termcolor.h"
-#include "../include/PresetValuesGenerator.h"
+// AmazingCow Libs
+#include "termcolor/termcolor.h"
+// Core2048
+#include "Core2048/Core2048.h"
+// using namespace std;
+// USING_NS_CORE2048;
 
-using namespace std;
-USING_NS_CORE2048;
-
-void print_board(const GameCore::Board &board, Block::SPtr p_gen_block)
+void
+print_board(
+    const Core2048::GameCore::Board &board,
+    Core2048::Block::SPtr           p_gen_block) noexcept
 {
-//    system("tput clear");
+    //    system("tput clear");
     for(auto &line : board)
     {
         for(auto p_block : line)
         {
             if(p_block)
             {
-                stringstream ss;
+                std::stringstream ss;
                 ss << p_block->get_value();
 
                 std::string str = "";
@@ -79,28 +45,33 @@ void print_board(const GameCore::Board &board, Block::SPtr p_gen_block)
                     );
                 }
 
-                cout << "[";
+                std::cout << "[";
 
                 if(p_block->get_value() < 100)
-                    cout << " ";
+                    std::cout << " ";
                 if(p_block->get_value() < 10)
-                    cout << " ";
+                    std::cout << " ";
 
-                cout << str;
+                std::cout << str;
 
-                cout << "]";
+                std::cout << "]";
             }
             else
-                cout << "[   ]";
+                std::cout << "[   ]";
         }
-        cout << endl;
+        std::cout << std::endl;
     }
 }
 
-int main()
+
+//----------------------------------------------------------------------------//
+// Entry Point                                                                //
+//----------------------------------------------------------------------------//
+int
+main()
 {
-    auto values_gen = PresetValuesGenerator("./resources/values.txt");
-    auto core       = GameCore(&values_gen, 4, 4, 150);
+    auto values_gen = Core2048::PresetValuesGenerator("./resources/values.txt");
+    auto core       = Core2048::GameCore(&values_gen, 4, 4, 150);
 
     std::stringstream ss;
     std::string input = "";
@@ -110,7 +81,7 @@ int main()
     while(1)
     {
         print_board(core.get_board(), p_block);
-        cout << ss.str() << endl;
+        std::cout << ss.str() << std::endl;
         std::cout << "Dir: ";
 
         char a;
@@ -121,20 +92,28 @@ int main()
 
         ss << a;
 
-        auto dir = GameCore::Direction::Up;
+        auto dir = Core2048::GameCore::Direction::Up;
 
-        if(a == 'w') dir = GameCore::Direction::Up;
-        if(a == 's') dir = GameCore::Direction::Down;
-        if(a == 'a') dir = GameCore::Direction::Left;
-        if(a == 'd') dir = GameCore::Direction::Right;
+        if(a == 'w') dir = Core2048::GameCore::Direction::Up;
+        if(a == 's') dir = Core2048::GameCore::Direction::Down;
+        if(a == 'a') dir = Core2048::GameCore::Direction::Left;
+        if(a == 'd') dir = Core2048::GameCore::Direction::Right;
 
         if(core.is_valid_move(dir))
         {
             auto a = core.make_move(dir);
             if(a.moved_blocks.size() != 0)
             {
-                cout << a.moved_blocks[0]->get_old_coord() << endl;
-                cout << a.moved_blocks[0]->get_coord() << endl;
+                auto old_coord = a.moved_blocks[0]->get_old_coord();
+                auto coord     = a.moved_blocks[0]->get_coord    ();
+
+                printf(
+                    "(%d,%d)\n(%d,%d)\n",
+                    old_coord.y,
+                    old_coord.x,
+                    coord.y,
+                    coord.x
+                );
             }
 
             p_block = core.generate_next_block();
