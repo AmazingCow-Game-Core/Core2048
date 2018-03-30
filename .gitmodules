@@ -1,3 +1,0 @@
-[submodule "test_game/lib/termcolor_cpp"]
-	path = test_game/lib/termcolor_cpp
-	url = https://github.com/AmazingCow-Libs/termcolor_cpp
