@@ -9,7 +9,13 @@ NS_CORE2048_BEGIN
 
 class IValuesGenerator
 {
-    //COWTODO: We should disable the CTORs, copy / move operators, etc...
+    //------------------------------------------------------------------------//
+    // CTOR / DTOR                                                            //
+    //------------------------------------------------------------------------//
+protected:
+    inline   IValuesGenerator() noexcept = default;
+    virtual ~IValuesGenerator() noexcept = default;
+
 
     //------------------------------------------------------------------------//
     // Interface Methods                                                      //
