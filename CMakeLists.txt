@@ -21,7 +21,6 @@ set(SOURCES
 ##----------------------------------------------------------------------------##
 ## Executable / Libary                                                        ##
 ##----------------------------------------------------------------------------##
-set(CORE2048_STANDALONE ON)
 if(CORE2048_STANDALONE)
     message("Building Standalone version")
 
