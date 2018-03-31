@@ -138,15 +138,19 @@ GameCore::make_move(Direction direction) noexcept
 {
     //--------------------------------------------------------------------------
     // Clear the previous data.
-    m_move_result.moved_blocks.clear  ();
-    m_move_result.merged_blocks.clear ();
+    m_move_result.moved_blocks  .clear();
+    m_move_result.merged_blocks .clear();
     m_move_result.removed_blocks.clear();
     m_move_result.move_valid = false;
 
     //--------------------------------------------------------------------------
     // Check if move is valid.
-    if(m_status == CoreGame::Status::Defeat || !is_valid_move(direction))
+    if(direction == Direction::None         ||
+       m_status == CoreGame::Status::Defeat ||
+       !is_valid_move(direction))
+    {
         return m_move_result;
+    }
 
     //--------------------------------------------------------------------------
     // Merge the blocks and move them.
@@ -178,6 +182,9 @@ GameCore::make_move(Direction direction) noexcept
 bool
 GameCore::is_valid_move(Direction direction) const noexcept
 {
+    if(direction == Direction::None)
+        return false;
+
     auto dir_coord = direction_2_coord(direction);
     for(auto &line : m_board)
     {

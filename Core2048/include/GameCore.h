@@ -52,7 +52,7 @@ public:
     /// @brief the Direction that the movement can be.
     /// @see make_move().
     enum class Direction {
-        Left, Up, Right, Down
+        Left, Up, Right, Down, None = -1
     };
 
 
